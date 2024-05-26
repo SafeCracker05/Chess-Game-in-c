@@ -50,8 +50,8 @@ wchar_t board[8][8] = {
     { L' ',  L' ', L' ',  L' ',  L' ', L' ', L' ', L' ' },
     { L' ',  L' ', L' ', L' ', L' ', L' ', L' ', L' ' },
     { L' ', L' ',  L' ',  L' ', L' ', L' ', L' ', L' ' },
-    { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
-    { white_rook, white_knight, white_bishop, white_queen, white_king, white_bishop, white_knight, white_rook }
+    { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, black_pawn },
+    { white_rook, white_knight, white_bishop, white_queen, white_king,L' ', white_pawn, white_pawn }
 };
 
 
@@ -89,6 +89,7 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
 
 // promotion du pion.
 char proposer_promotion_white();
+char proposer_promotion_black();
 
 
 int flag_correct_moove = 0;
@@ -839,8 +840,8 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
              else 
                 return -1;
         }
-        else if((board[start_y + 1][start_x + 1] != L' ' && end_x == start_x + 1) || (board[start_y + 1][start_x - 1] != L' ' && end_x == start_x - 1)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
-        {
+        else if((board[start_y + 1][start_x + 1] != L' ' && end_x == start_x + 1 && end_y != 7) || (board[start_y + 1][start_x - 1] != L' ' && end_x == start_x - 1 && end_y != 7)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
+        {//sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
                 // si oui je verifie qu'il ne sont pas de la meme couleur
                 if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
                   return 1; // pas de la meme couleur donc il peut le manger 
@@ -848,11 +849,41 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
                   return 0; // de la meme couleur donc coup illegal
 
         }
-        else if(board[start_y + 1][start_x] == L' ')
-        {
+        else if(board[start_y + 1][start_x] == L' ' && end_y != 7)
+        {//sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
             if(end_x == start_x)// on sait que le  y postion du pion est sur la ligne d'apres ducoup  on verifier si  il va bouger sur la case de devant et pas en diagonal
                return 1;
             else 
+               return -1;
+        }
+        else if(end_y == 7)
+        {
+           if(end_x == start_x)
+           {
+              if(board[end_y][end_x] == L' ')
+              {
+                return 2;
+              }
+              else 
+                return -1;
+           }
+           else if (board[start_y + 1][start_x - 1] != L' ' && end_x == start_x - 1)
+           {
+                // si oui je verifie qu'il ne sont pas de la meme couleur
+                if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
+                  return 2; // pas de la meme couleur donc il peut le manger 
+                else 
+                  return 0; // de la meme couleur donc coup illegal 
+           }
+           else if (board[start_y + 1][start_x + 1] != L' ' && end_x == start_x + 1)
+           {
+                // si oui je verifie qu'il ne sont pas de la meme couleur
+                if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
+                  return 2; // pas de la meme couleur donc il peut le manger 
+                else 
+                  return 0; // de la meme couleur donc coup illegal 
+           }
+           else 
                return -1;
         }
         else 
@@ -1404,6 +1435,25 @@ char proposer_promotion_white() {
     }
 }
 
+char proposer_promotion_black() {
+    int choix;
+    printf("Your pawn had been promoted. Choose an option:\n");
+    printf("1: Queen\n");
+    printf("2: Rook\n");
+    printf("3: Bishop\n");
+    printf("4: Knight\n");
+
+    scanf("%d", &choix);
+
+    switch (choix) {
+        case 1: return black_queen;  // Reine
+        case 2: return black_rook;  // Tour
+        case 3: return black_bishop;  // Fou
+        case 4: return black_knight;  // Cavalier
+        default: return black_queen; // Par défaut, promouvoir à Reine
+    }
+}
+
 void update_board(struct start_position s, struct end_position e, struct positon_of_kings p) {
     int start_x = s.absice_position;
     int start_y = s.ordonne_position;
@@ -1550,11 +1600,20 @@ void update_board(struct start_position s, struct end_position e, struct positon
             }
             else 
             {
-                 
-                 // Le mouvement est légal
-                 flag_correct_moove = 1;
-                 char promotion = proposer_promotion_white();
-                 board[end_y][end_x] = promotion;
+                 if(piece == white_pawn)
+                 {
+                   // Le mouvement est légal
+                   flag_correct_moove = 1;
+                   char promotion = proposer_promotion_white();
+                   board[end_y][end_x] = promotion;
+                 }
+                 else
+                 {
+                    // Le mouvement est légal
+                   flag_correct_moove = 1;
+                   char promotion = proposer_promotion_black();
+                   board[end_y][end_x] = promotion;
+                 }
 
             } 
         }
