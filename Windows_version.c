@@ -44,9 +44,9 @@ struct positon_of_kings{
 
 // Plateau de jeu
 wchar_t board[8][8] = {
-    { black_rook, black_knight, black_bishop, black_queen, black_king, black_bishop, black_knight, black_rook },
-    { black_pawn, black_pawn, black_pawn,  black_pawn,  black_pawn, black_pawn, black_pawn, black_pawn },
-    { L' ', L' ', L' ', L' ', L' ',  L' ', L' ', L' ' },
+    { black_rook, black_knight, black_bishop, black_queen, black_king,L' ', black_pawn,black_pawn },
+    { black_pawn, black_pawn, black_pawn,  black_pawn,  black_pawn, black_pawn, black_pawn,white_pawn },
+    { L' ', L' ', L' ', L' ', L' ',  L' ', L' ',L' '},
     { L' ',  L' ', L' ',  L' ',  L' ', L' ', L' ', L' ' },
     { L' ',  L' ', L' ', L' ', L' ', L' ', L' ', L' ' },
     { L' ', L' ',  L' ',  L' ', L' ', L' ', L' ', L' ' },
@@ -86,6 +86,9 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p, wchar_t
 int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t piece);
 
 int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y, wchar_t piece);
+
+// promotion du pion.
+char proposer_promotion_white();
 
 
 int flag_correct_moove = 0;
@@ -750,19 +753,49 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
              else 
                 return -1;
         }
-        else if((board[start_y - 1][start_x + 1] != L' ' && end_x == start_x + 1) || (board[start_y - 1][start_x - 1] != L' ' && end_x == start_x - 1)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
-        {
+        else if((board[start_y - 1][start_x + 1] != L' ' && end_x == start_x + 1 && end_y != 0) || (board[start_y - 1][start_x - 1] != L' ' && end_x == start_x - 1 && end_y != 0)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
+        {//sauf dans le cas du end_y != 0 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 0
                 // si oui je verifie qu'il ne sont pas de la meme couleur
                 if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
                   return 1; // pas de la meme couleur donc il peut le manger 
                 else 
                   return 0; // de la meme couleur donc coup illegal
         }
-        else if(board[start_y - 1][start_x] == L' ')//apres avoir verifier les case en diagonal  on verifie si la case de devant est vide pour verifier le potentiel deplacement vers la case en questions.
-        {
+        else if(board[start_y - 1][start_x] == L' ' && end_y != 0)//apres avoir verifier les case en diagonal  on verifie si la case de devant est vide pour verifier le potentiel deplacement vers la case en questions.
+        {//sauf dans le cas du end_y != 0 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 0
             if(end_x == start_x)// on sait que le  y postion du pion est sur la ligne d'apres ducoup  on verifier si  il va bouger sur la case de devant et pas en diagonal
                return 1;
             else 
+               return -1;
+        }
+        else if(end_y == 0)
+        {
+           if(end_x == start_x)
+           {
+              if(board[end_y][end_x] == L' ')
+              {
+                return 2;
+              }
+              else 
+                return -1;
+           }
+           else if (board[start_y - 1][start_x - 1] != L' ' && end_x == start_x - 1)
+           {
+                // si oui je verifie qu'il ne sont pas de la meme couleur
+                if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
+                  return 2; // pas de la meme couleur donc il peut le manger 
+                else 
+                  return 0; // de la meme couleur donc coup illegal 
+           }
+           else if (board[start_y - 1][start_x + 1] != L' ' && end_x == start_x + 1)
+           {
+                // si oui je verifie qu'il ne sont pas de la meme couleur
+                if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
+                  return 2; // pas de la meme couleur donc il peut le manger 
+                else 
+                  return 0; // de la meme couleur donc coup illegal 
+           }
+           else 
                return -1;
         }
         else 
@@ -1352,7 +1385,24 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
         return 0; // Par exemple
     }
 }
+char proposer_promotion_white() {
+    int choix;
+    printf("Your pawn had been promoted. Choose an option:\n");
+    printf("1: Queen\n");
+    printf("2: Rook\n");
+    printf("3: Bishop\n");
+    printf("4: Knight\n");
 
+    scanf("%d", &choix);
+
+    switch (choix) {
+        case 1: return white_queen;  // Reine
+        case 2: return white_rook;  // Tour
+        case 3: return white_bishop;  // Fou
+        case 4: return white_knight;  // Cavalier
+        default: return white_queen; // Par défaut, promouvoir à Reine
+    }
+}
 
 void update_board(struct start_position s, struct end_position e, struct positon_of_kings p) {
     int start_x = s.absice_position;
@@ -1484,6 +1534,30 @@ void update_board(struct start_position s, struct end_position e, struct positon
             }   
 
         } 
+        else if(pawn_verification(start_x, start_y, end_x, end_y, piece) == 2)
+        {
+  
+            // Deplacement provisoire  de la piece en attente de verfication
+            board[end_y][end_x] = board[start_y][start_x];
+            board[start_y][start_x] = L' ';
+            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+            {
+               //retour a l'etat initial puisque le coup en question est illegal
+               board[start_y][start_x] = board[end_y][end_x];
+               board[end_y][end_x] = L' ';
+               printf("it's will be check.\n");
+               flag_correct_moove = 0;
+            }
+            else 
+            {
+                 
+                 // Le mouvement est légal
+                 flag_correct_moove = 1;
+                 char promotion = proposer_promotion_white();
+                 board[end_y][end_x] = promotion;
+
+            } 
+        }
         else if(pawn_verification(start_x, start_y, end_x, end_y, piece) == 3)
         {
                         
