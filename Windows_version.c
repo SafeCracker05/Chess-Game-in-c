@@ -1,4 +1,4 @@
-// librairy
+// librairies
 #include <stdio.h>
 #include <wchar.h>
 #include <locale.h>
@@ -20,70 +20,65 @@
 #define white_knight 'n'
 #define white_pawn   'p'
 
-// Structure qui stoke la position de départ d'une pièce.
+// Structure qui stocke la position de départ d'une pièce.
 struct start_position {
     char start_position[3];
     int absice_position;
     int ordonne_position;
 };
 
-// Structure qui stoke la position d'arrivée potentielle (avant confirmation de la legalite de coup) d'une pièce.
+// Structure qui stocke la position d'arrivée potentielle (avant confirmation de la légalité du coup) d'une pièce.
 struct end_position {
     char potential_end_position[3];
     int absice_position;
     int ordonne_position;
 };
 
-// Structure qui stoke la postion x, y en direct de chaque rois.
-struct positon_of_kings{
+// Structure qui stocke la position x, y en direct de chaque roi.
+struct positon_of_kings {
     int x_position_white_king;
     int y_position_white_king;
     int x_position_black_king;
     int y_position_black_king;
 };
 
-// Plateau de jeu
 wchar_t board[8][8] = {
-    { black_rook, black_knight, black_bishop, black_queen, black_king,L' ', black_pawn,black_pawn },
-    { black_pawn, black_pawn, black_pawn,  black_pawn,  black_pawn, black_pawn, black_pawn,white_pawn },
-    { L' ', L' ', L' ', L' ', L' ',  L' ', L' ',L' '},
-    { L' ',  L' ', L' ',  L' ',  L' ', L' ', L' ', L' ' },
-    { L' ',  L' ', L' ', L' ', L' ', L' ', L' ', L' ' },
-    { L' ', L' ',  L' ',  L' ', L' ', L' ', L' ', L' ' },
-    { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, black_pawn },
-    { white_rook, white_knight, white_bishop, white_queen, white_king,L' ', white_pawn, white_pawn }
+    { black_rook, black_knight, black_bishop, black_queen, black_king, L' ', L' ', black_rook },
+    { black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn },
+    { L' ', L' ', L' ', L' ', L' ', L' ',  L' ',  L' '},
+    { L' ', L' ', L' ', L' ', L' ', L' ', L' ',  L' ' },
+    { L' ', L' ', L' ', L' ', L' ', L' ', L' ', L' ' },
+    { L' ', L' ', L' ', L' ', L' ', L' ', L' ', L' ' },
+    { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
+    { white_rook, white_knight, white_bishop, white_queen, white_king, white_bishop, white_knight, white_rook }
 };
 
+void Show_table(); // fonction qui imprime le chessboard
+wchar_t find_piece(struct start_position s); // fonction qui trouve la pièce dans le plateau à partir de la position reçue et retourne la pièce en question
+void update_board(struct start_position s, struct end_position e, struct positon_of_kings *p); // cette fonction update le tableau et vérifie la légalité du coup en fonction de la start-x, start-y, end-x, end-y.
+void Convertor_Position_to_index_array(char position[3], int *absice_position, int *ordonne_position); // cette fonction va convertir la case choisie par le joueur et les convertit en index abscisse pour le x horizontal et l'ordonnée pour le y vertical
 
-void Show_table(); // fonction qui imrime le chessboard
-
-wchar_t find_piece(struct start_position s);// fonction qui trouve la piece dans le plateau a partir de la postion recus et retourne la piece en question
-
-void update_board(struct start_position s, struct end_position e, struct positon_of_kings p);// cette fonction update le tableau et verfie la legalite du coup en fonction de la start-x, start-y, end-x, end-y.
-
-void Convertor_Position_to_index_array(char position[3], int *absice_position, int *ordonne_position);// cette fonction va convertir la case chosit par le joueur et les convertit en index abscisse pour le x horyzontal et l'ordonne pour le y la vertical
-
-//ces fonctions verifie la legalite de chaque coup en fonction de la piece choisit par le joueur
+// ces fonctions vérifient la légalité de chaque coup en fonction de la pièce choisie par le joueur
 int bishop_verification(int start_x, int start_y, int end_x, int end_y);
 int rook_verification(int start_x, int start_y, int end_x, int end_y);
 int check_if_it_black_or_white(wchar_t piece);
 int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t piece);
 int knight_verification(int start_x, int start_y, int end_x, int end_y);
 
-// ces fonction verifie est ce que  sur la case donne il y'a un possible echec elle est utile pour le rois et permet de verifie est ce que le deplacement du rois vers une case sera echeck sur le rois donc deplacement non autorise et permet de savoir aussi si le rois est en echec sur sa position actuelle. 
+// ces fonctions vérifient si sur la case donnée il y a un possible échec. Elles sont utiles pour le roi et permettent de vérifier si le déplacement du roi vers une case sera échec sur le roi, donc déplacement non autorisé, et permettent de savoir aussi si le roi est en échec sur sa position actuelle.
 int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y);
 int check_rook_verification(int start_x, int start_y, int end_x, int end_y);
-int check_paw_verification(int start_x, int start_y, int end_x, int end_y);
+int check_pawn_verification(int start_x, int start_y, int end_x, int end_y);
 int check_knight_verification(int start_x, int start_y, int end_x, int end_y);
-//                                 ⇩                          
 int king_verification(int start_x, int start_y, int end_x, int end_y);
 
-// cette fonction va verifier les fonctions precedentes et va verfier si le rois et en echeck sur sa position actuelle et activera un flag qui permettra dans les fonction de verification de checkmate est ce que le rois est deja en check.
+// cette fonction va vérifier les fonctions précédentes et va vérifier si le roi est en échec sur sa position actuelle et activera un flag qui permettra dans les fonctions de vérification de checkmate si le roi est déjà en échec.
 int check_echec_verification(int start_x, int start_y, int end_x, int end_y, int i, int j);
+int verification_check_on_the_king_or_not(struct positon_of_kings *p);
 
-// cette fonction verifie si le rois a une possibilite de bouger vers une autre case sans qu'il soit en check si il n'a de case ou il peut bouger et que le flag_check et activer sela  veut dire que le rois est en checkmate
-int verification_mat_on_the_white_king_or_not(struct positon_of_kings p, wchar_t piece);
-int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t piece);
+// cette fonction vérifie si le roi a une possibilité de bouger vers une autre case sans qu'il soit en échec. Si il n'a pas de case où il peut bouger et que le flag_check est activé cela veut dire que le roi est en échec et mat.
+int verification_mat_on_the_white_king_or_not(struct positon_of_kings *p, wchar_t piece);
+int verification_mat_on_the_black_king_or_not(struct positon_of_kings *p, wchar_t piece);
 
 int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y, wchar_t piece);
 
@@ -91,34 +86,45 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
 char proposer_promotion_white();
 char proposer_promotion_black();
 
+// vérifier si le coup du castling entre le roi et la tour est selon les règles
+int verfication_if_it_is_correct_castling(int start_x, int start_y, int end_x, struct positon_of_kings *p);
 
 int flag_correct_moove = 0;
 int turn = 1; // 1-white 0-black
 int i = 0;
-int first_move_pawn = 0;//une ou deux case en option de mouvement seulement pour sont premier coup.
+int first_move_pawn = 0; // une ou deux cases en option de mouvement seulement pour son premier coup.
 
-
+// flags pour vérifier l'échec et mat sur le roi
 int flag_echec_king = 0;
 int flag_echec_on_white_king = 0;
 int flag_echec_on_black_king = 0;
 
+// flags pour la validité du coup de mon passant
 int flag_mon_passant_white = 0;
 int flag_mon_passant_black = 0;
+
+// vérifier si le castling est selon les règles
+int first_move_black_king = 0;
+int first_move_black_castle = 0;
+int first_move_white_king = 0;
+int first_move_white_castle = 0;
+
+
+//differencier la zone de verification entre une verfication de check et une verfication de mat 
+int flag = 0;
 
 int main(void) {
     struct start_position s;
     struct end_position e;
     char choice;
     int current_player = 1; // 1 pour le joueur blanc, 2 pour le joueur noir
-    
-        // Initialisation lors de la déclaration
-    struct positon_of_kings p = {
-        .x_position_white_king = 4,
-        .y_position_white_king = 7,
-        .x_position_black_king = 4,
-        .y_position_black_king = 0
-    };
 
+    struct positon_of_kings p;
+    // Initialisation des membres de la structure
+    p.x_position_white_king = 4;
+    p.y_position_white_king = 7;
+    p.x_position_black_king = 4;
+    p.y_position_black_king = 0;
 
     do {
         printf("\033[H\033[J"); // Clear the terminal
@@ -129,6 +135,9 @@ int main(void) {
         } else {
             printf("\nPlayer 2's turn (black)\n");
         }
+        printf("%d", p.x_position_white_king);
+        printf("%d", p.y_position_white_king);
+        printf("%d", flag_echec_on_white_king);
 
         printf("Enter the piece that you want to move: ");
         scanf("%s", s.start_position);
@@ -138,25 +147,20 @@ int main(void) {
         Convertor_Position_to_index_array(s.start_position, &s.absice_position, &s.ordonne_position);
         Convertor_Position_to_index_array(e.potential_end_position, &e.absice_position, &e.ordonne_position);
 
-        if ((current_player == 1 && check_if_it_black_or_white(find_piece(s)) == -1) || (current_player == 2 && check_if_it_black_or_white(find_piece(s)) == 1)) {// cette condition verifie si le joeur que c'est au tour de jouer a choisi une piece de sa propre couleur.
-            update_board(s, e, p);
+        if ((current_player == 1 && check_if_it_black_or_white(find_piece(s)) == -1) || (current_player == 2 && check_if_it_black_or_white(find_piece(s)) == 1)) { // cette condition vérifie si le joueur que c'est au tour de jouer a choisi une pièce de sa propre couleur.
+            update_board(s, e, &p);
 
-            int verification_check_on_the_king_or_not(struct positon_of_kings p, wchar_t piece);
-            
-            // on verifie si les rois ne sont pas en echeck pour activer les flags dans les fonctions de verification de check mate sur le rois
-            verification_check_on_the_king_or_not(p, white_king);
-            verification_check_on_the_king_or_not(p, black_king);
+            // on vérifie si les rois ne sont pas en échec pour activer les flags dans les fonctions de vérification de checkmate sur le roi
+            verification_check_on_the_king_or_not(&p);
 
-            if(flag_correct_moove != 0)
-              if((verification_mat_on_the_white_king_or_not(p , white_king) != -1)  &&  (verification_mat_on_the_black_king_or_not(p , black_king) != -1))
-              {
-                current_player = (current_player == 1) ? 2 : 1; // Passer au joueur suivant
-              }
-              else 
-                break;
+            if (flag_correct_moove != 0) // bon move on vérifie s'il y a mat sur l'un des rois
+                if ((verification_mat_on_the_white_king_or_not(&p, white_king) != -1) && (verification_mat_on_the_black_king_or_not(&p, black_king) != -1)) {
+                    current_player = (current_player == 1) ? 2 : 1; // Passer au joueur suivant
+                } else
+                    break;
             else
-               printf("\n");
-              
+                printf("\n");
+
         } else {
             printf("Invalid move. Make sure you move your own pieces.\n");
         }
@@ -166,23 +170,21 @@ int main(void) {
 
     } while ((choice == 'y' || choice == 'Y'));
 
-    if(verification_mat_on_the_white_king_or_not(p , white_king) == -1)
-    {
-       printf("\033[H\033[J"); // Clear the terminal
-       Show_table();
-       printf("checkMate\n");
-       printf("The Second player won (black)");
-    }
-    else if(verification_mat_on_the_black_king_or_not(p , black_king) == -1)
-    {
-       printf("\033[H\033[J"); // Clear the terminal
-       Show_table();
-       printf("checkMate\n");
-       printf("The first player won (white)");
+    if (verification_mat_on_the_white_king_or_not(&p, white_king) == -1) {
+        printf("\033[H\033[J"); // Clear the terminal
+        Show_table();
+        printf("checkMate\n");
+        printf("The Second player won (black)");
+    } else if (verification_mat_on_the_black_king_or_not(&p, black_king) == -1) {
+        printf("\033[H\033[J"); // Clear the terminal
+        Show_table();
+        printf("checkMate\n");
+        printf("The first player won (white)");
     }
 
     return 0;
 }
+
 
 void Convertor_Position_to_index_array(char position[3], int *absice_position, int *ordonne_position)
 {
@@ -273,28 +275,29 @@ wchar_t find_piece(struct start_position s)
 }
 int check_pawn_verification(int start_x, int start_y, int end_x, int end_y); //declaration de la fonction pour le compiler puisse la detecter
 
-int verification_check_on_the_king_or_not(struct positon_of_kings p, wchar_t piece)
+int verification_check_on_the_king_or_not(struct positon_of_kings *p)
 {
-    // cette fonction  va faire en sorte de verifier a quel moment le rois est en check et va principalemt etre utile a la fonction qui s'occupe la de verfication des mat sur le echec et  aide a diferencier les moments ou le rois ne peut pas bouger comme les debut de partie au moment ou il y'a un vrai echeck mat puisque le rois et deja en echeck cette fonction va activer des global flag qui vont etre recupere dans la fonction de verfication de mat sur les rois 
-    if (check_diagonal_verification(p.x_position_white_king,  p.y_position_white_king, p.x_position_white_king,  p.y_position_white_king) == -1 || 
-                    check_rook_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king,  p.y_position_white_king) == -1 || 
-                    check_knight_verification(p.x_position_white_king,  p.y_position_white_king, p.x_position_white_king, p.y_position_white_king) == -1  ||  
-                    check_pawn_verification(p.x_position_white_king,  p.y_position_white_king, p.x_position_white_king,  p.y_position_white_king) == -1) {
-                    flag_echec_on_white_king = 1;
+    // cette fonction va faire en sorte de verifier a quel moment le rois est en check et va principalemt etre utile a la fonction qui s'occupe la de verfication des mat sur le echec et aide a diferencier les moments ou le rois ne peut pas bouger comme les debut de partie au moment ou il y'a un vrai echeck mat puisque le rois et deja en echeck cette fonction va activer des global flag qui vont etre recupere dans la fonction de verfication de mat sur les rois 
+    if (check_diagonal_verification(p->x_position_white_king,  p->y_position_white_king, p->x_position_white_king,  p->y_position_white_king) == -1 || 
+        check_rook_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king,  p->y_position_white_king) == -1 || 
+        check_knight_verification(p->x_position_white_king,  p->y_position_white_king, p->x_position_white_king, p->y_position_white_king) == -1  ||  
+        check_pawn_verification(p->x_position_white_king,  p->y_position_white_king, p->x_position_white_king,  p->y_position_white_king) == -1) {
+        flag_echec_on_white_king = 1;
+        flag = 1;
     }
-    else if(check_diagonal_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king) == -1 || 
-                    check_rook_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king,p.y_position_black_king) == -1 || 
-                    check_knight_verification(p.x_position_black_king, p.y_position_black_king,p.x_position_black_king, p.y_position_black_king) == -1  ||  
-                    check_pawn_verification(p.x_position_black_king,p.y_position_black_king, p.x_position_black_king, p.y_position_black_king) == -1) {
-                    flag_echec_on_black_king = 1;
+    else if(check_diagonal_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king) == -1 || 
+            check_rook_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king) == -1 || 
+            check_knight_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king) == -1  ||  
+            check_pawn_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king) == -1) {
+        flag_echec_on_black_king = 1;
     }
     else {
         flag_echec_on_black_king = 0;
         flag_echec_on_white_king = 0;
     }
-        
 }
-int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t piece)
+
+int verification_mat_on_the_white_king_or_not(struct positon_of_kings *p ,wchar_t piece)
 {
     int count_numbers_of_check = 0;
     // |---------------------------------|
@@ -305,9 +308,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king - 1) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king - 1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -319,8 +321,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king -1) == -1|| king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king -1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -332,8 +334,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king - 1) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king - 1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -345,8 +347,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king) == 0) {
         count_numbers_of_check++;
     }
 
@@ -358,8 +360,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king) == 0) {
         count_numbers_of_check++;
     }
 
@@ -371,8 +373,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |     6    |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king + 1) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king - 1, p.y_position_white_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king + 1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king - 1, p->y_position_white_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -384,8 +386,8 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |     7     |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king + 1) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king + 1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -397,24 +399,22 @@ int verification_mat_on_the_white_king_or_not(struct positon_of_kings p ,wchar_t
     // |          |           |    8     |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king + 1) == -1 || king_verification(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king + 1, p.y_position_white_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king + 1) == -1 || 
+       king_verification(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king + 1, p->y_position_white_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
     if(count_numbers_of_check == 8 && flag_echec_on_white_king == 1)
     {
-        printf("true");
         return -1;
     }
     else 
        return 1;
-
-
 }
-int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t piece)
+
+int verification_mat_on_the_black_king_or_not(struct positon_of_kings *p, wchar_t piece)
 {
-        int count_numbers_of_check = 0;
+    int count_numbers_of_check = 0;
     // |---------------------------------|
     // |     1     |          |          |
     // |---------------------------------|
@@ -423,9 +423,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king - 1) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king - 1) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -437,8 +436,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king -1) == -1|| king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king - 1) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -450,8 +449,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king - 1) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king - 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king - 1) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king - 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -463,8 +462,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king) == 0) {
         count_numbers_of_check++;
     }
 
@@ -476,8 +475,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king) == 0) {
         count_numbers_of_check++;
     }
 
@@ -489,8 +488,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |     6    |           |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king + 1 == -1) || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king - 1, p.y_position_black_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king + 1 == -1) || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king - 1, p->y_position_black_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -502,8 +501,8 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |     7     |          |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king + 1) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king + 1) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
@@ -515,20 +514,20 @@ int verification_mat_on_the_black_king_or_not(struct positon_of_kings p, wchar_t
     // |          |           |    8     |
     // |----------------|----------------|
 
-    if(king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king + 1) == -1 || king_verification(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king + 1, p.y_position_black_king + 1) == 0)
-    {
+    if(king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king + 1) == -1 || 
+       king_verification(p->x_position_black_king, p->y_position_black_king, p->x_position_black_king + 1, p->y_position_black_king + 1) == 0) {
         count_numbers_of_check++;
     }
 
-    if(count_numbers_of_check == 8 && flag_echec_on_black_king == 1)
-    {
-       return -1;   
+    if(count_numbers_of_check == 8 && flag_echec_on_black_king == 1) {
+        return -1;
+    } else {
+        return 1;
     }
-    else 
-       return 1;
 }
+
 int bishop_verification(int start_x, int start_y, int end_x, int end_y) {
-    // cette fonction verifier si il y'a une piece en chemin dans la trajectoir diagonal. je l'utilise pour le fous et les roi.
+    // cette fonction verifier si il y'a une piece en chemin dans la trajectoir diagonal. je l'utilise pour le fous et la reine.
     // |----------------|----------------|
     // |      |         |        1       |
     // |----------------♝----------------|
@@ -559,6 +558,7 @@ int bishop_verification(int start_x, int start_y, int end_x, int end_y) {
     else if (start_y > end_y && start_x > end_x) {
         int i = start_x - 1;
         int j = start_y - 1;
+
         while (i >= end_x && j >= end_y) {
            if (i == end_x && j == end_y) {
                 // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -582,6 +582,7 @@ int bishop_verification(int start_x, int start_y, int end_x, int end_y) {
     else if (start_y < end_y && start_x > end_x) {
         int i = start_x - 1;
         int j = start_y + 1;
+
         while (i >= end_x && j <= end_y) {
            if (i == end_x && j == end_y) {
                 // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -605,6 +606,8 @@ int bishop_verification(int start_x, int start_y, int end_x, int end_y) {
     else if (start_y < end_y && start_x < end_x) {
         int i = start_x + 1;
         int j = start_y + 1;
+
+        
         while (i <= end_x && j <= end_y) {
            if (i == end_x && j == end_y) {
                 // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -637,6 +640,7 @@ int rook_verification(int start_x, int start_y, int end_x, int end_y)
         {
            int i = start_x;
            int j = start_y - 1;
+
            while (j >= end_y) {
               if (j == end_y) {
                     // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -664,6 +668,7 @@ int rook_verification(int start_x, int start_y, int end_x, int end_y)
         {
            int i = start_x + 1;
            int j = start_y;
+
            while (i <= end_x) {
               if (i == end_x) {
                 if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
@@ -690,6 +695,7 @@ int rook_verification(int start_x, int start_y, int end_x, int end_y)
         {
            int i = start_x;
            int j = start_y + 1;
+
            while (j <= end_y) {
               if (j == end_y) {
                     // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -717,6 +723,7 @@ int rook_verification(int start_x, int start_y, int end_x, int end_y)
         {
            int i = start_x - 1;
            int j = start_y;
+
            while (i >= end_x) {
               if (i == end_x) {
                     // si oui je verifie qu'il ne sont pas de la meme couleur
@@ -744,18 +751,19 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
         //mon passant rule
         if(abs(6 - end_y) == 4)
         {
-             if((board[start_y][start_x + 1] == black_pawn && end_x == start_x + 1) || (board[start_y][start_x - 1] == black_pawn && end_x == start_x - 1))
+             if((board[start_y][start_x + 1] == black_pawn && end_x == start_x + 1 && board[end_y][end_x] == L' ') || (board[start_y][start_x - 1] == black_pawn && end_x == start_x - 1 && board[end_y][end_x] == L' '))
              {
+
                  if(flag_mon_passant_white == start_x - 1  || flag_mon_passant_white == start_x + 1)
                     return 3;
                  else 
                     return -1;
              }
-             else 
-                return -1;
+
         }
         else if((board[start_y - 1][start_x + 1] != L' ' && end_x == start_x + 1 && end_y != 0) || (board[start_y - 1][start_x - 1] != L' ' && end_x == start_x - 1 && end_y != 0)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
-        {//sauf dans le cas du end_y != 0 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 0
+        {
+            //sauf dans le cas du end_y != 0 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 0
                 // si oui je verifie qu'il ne sont pas de la meme couleur
                 if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
                   return 1; // pas de la meme couleur donc il peut le manger 
@@ -802,7 +810,7 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
         else 
             return -1;
     }
-    else if(first_move_pawn == 0 && end_y == start_y - 2)
+    else if(start_y == 6 && end_y == start_y - 2)
     {
         if(board[start_y - 2][start_x] == L' ')// on verifie si la case deux case devant le pion  est vide puisque dans le cas ou la case n'est pas disponible le mouvenent du pion vers cette case ne sera pas possibles.
         {
@@ -830,7 +838,7 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
         //mon passant rule
         if(abs(end_y - 1) == 4)// si la difference entre la deuxieme ligne du plateau donc le array au index 1 moin le end-y du pion noir faire 4 ce la veux dire que le pion noir a bouger de trois case avant d'efectuer le potentiel coup de monpassant
         {
-             if((board[start_y][start_x + 1] == white_pawn && end_x == start_x + 1) || (board[start_y][start_x - 1] == white_pawn && end_x == start_x - 1))
+             if((board[start_y][start_x + 1] == white_pawn && end_x == start_x + 1 && board[end_y][end_x] == L' ') || (board[start_y][start_x - 1] == white_pawn && end_x == start_x - 1 && board[end_y][end_x] == L' '))
              {
                  if(flag_mon_passant_black == start_x - 1  || flag_mon_passant_black == start_x + 1)
                     return 3;
@@ -841,7 +849,8 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
                 return -1;
         }
         else if((board[start_y + 1][start_x + 1] != L' ' && end_x == start_x + 1 && end_y != 7) || (board[start_y + 1][start_x - 1] != L' ' && end_x == start_x - 1 && end_y != 7)) // la je verifie  si il y'a des piece en diagonal sur la ligne du dessus
-        {//sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
+        {
+            //sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
                 // si oui je verifie qu'il ne sont pas de la meme couleur
                 if(abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2)// si la couleur du pion a l'arrive est la meme que la piece de depart il ne peut pas le manger puisque il sont de la meme couleur 
                   return 1; // pas de la meme couleur donc il peut le manger 
@@ -850,7 +859,8 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
 
         }
         else if(board[start_y + 1][start_x] == L' ' && end_y != 7)
-        {//sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
+        {
+            //sauf dans le cas du end_y != 7 pour differencier entre une prise de piece en diagonal et une promotion de pion de pion apres une prise de piece en diagonal dans le array au index 7
             if(end_x == start_x)// on sait que le  y postion du pion est sur la ligne d'apres ducoup  on verifier si  il va bouger sur la case de devant et pas en diagonal
                return 1;
             else 
@@ -889,7 +899,7 @@ int pawn_verification(int start_x, int start_y, int end_x, int end_y, wchar_t pi
         else 
             return -1;
     }
-    else if(first_move_pawn == 0 && end_y == start_y + 2)// si c'est le premier changement de position pour le pion choisi le joeur a la posibilite de bouger de deux case en avant 
+    else if(start_y == 1  && end_y == start_y + 2)// si c'est le premier changement de position pour le pion choisi le joeur a la posibilite de bouger de deux case en avant 
     {
         if(board[start_y + 2][start_x] == L' ')// on verifie si la case deux case devant le pion  est vide.
         {
@@ -994,12 +1004,28 @@ int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y)
     // cette fonction va recevoir les start et en position puis va aller a la end postion et verifier toute les diagonal pour verifier si il y'a ps de fous ou reinE sur les traj diagonal si il y'a le rois ne pourra pas bouger vers cette case puisque sa sera un echec
 
     // |----------------|----------------|
-    // |      |         |        1       |
-    // |----------------♝---------------|
+    // |      |         |        ♝      |
+    // |----------------♚---------------|
     // |      |         |        |       |
     // |----------------|----------------|
-            int i = end_x + 1;
-            int j = end_y - 1;
+
+            int i;
+            int j;
+
+           if(flag == 0)
+           {
+             i = end_x + 1;
+             j = end_y - 1;
+           }
+           else 
+           {
+             i = end_x + 2;
+             j = end_y - 2;
+           }
+
+            
+
+            
             while (i <= 7 && j >= 0) {
                if((board[j][i] ==  black_bishop || board[j][i] ==  white_bishop)  || (board[j][i] ==  black_queen || board[j][i] ==  white_queen))// ce sont tout les pion qui peuvent cause un echec au rois en diagonal
                {
@@ -1019,13 +1045,24 @@ int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y)
                 j--;      
             }
     // |----------------|----------------|
-    // |      2         |        |       |
-    // |----------------♝---------------|
+    // |     ♝         |        |       |
+    // |----------------♚---------------|
     // |      |         |        |       |
     // |----------------|----------------|
 
-            int i2 = end_x - 1;
-            int j2 = end_y - 1;
+            int i2;
+            int j2;
+
+           if(flag == 0)
+           {
+             i2 = end_x - 1;
+             j2 = end_y - 1;
+           }
+           else 
+           {
+             i2 = end_x - 2;
+             j2 = end_y - 2;
+           }
 
             while (i2 >= 0 && j2 >= 0) {
                if((board[j2][i2] ==  black_bishop || board[j2][i2] ==  white_bishop)  || (board[j2][i2] ==  black_queen || board[j2][i2] ==  white_queen))// ce sont tout les pion qui peuvent cause un echec au rois en diagonal
@@ -1045,14 +1082,22 @@ int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y)
             }
     // |----------------|----------------|
     // |       |        |        |       |
-    // |----------------♝---------------|
-    // |       3        |        |       |
+    // |----------------♚---------------|
+    // |       ♝       |        |       |
     // |----------------|----------------|
+            int i3;
+            int j3;
 
-            int i3 = end_x - 1;
-            int j3 = end_y + 1;
-
-
+           if(flag == 0)
+           {
+             i3 = end_x - 1;
+             j3 = end_y + 1;
+           }
+           else 
+           {
+             i3 = end_x - 2;
+             j3 = end_y + 2;
+           }
             while (i3 >= 0 && j3 <= 7) {
                
                if((board[j3][i3] ==  black_bishop || board[j3][i3] ==  white_bishop)  || (board[j3][i3] ==  black_queen || board[j3][i3] ==  white_queen))// ce sont tout les pion qui peuvent cause un echec au rois en diagonal
@@ -1072,14 +1117,27 @@ int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y)
             }
     // |----------------|----------------|
     // |       |        |        |       |
-    // |----------------♝---------------|
-    // |       |        |        4       |
+    // |----------------♚---------------|
+    // |       |        |        ♝      |
     // |----------------|----------------|
             
-            int i4 = end_x + 1;
-            int j4 = end_y + 1;
+            int i4;
+            int j4;
 
+           if(flag == 0)
+           {
+             i4 = end_x + 1;
+             j4 = end_y + 1;
+           }
+           else 
+           {
+             i4 = end_x + 2;
+             j4 = end_y + 2;
+           }
 
+            
+
+            
             while (i4 <=7 && j4 <= 7) {
                
                if((board[j4][i4] ==  black_bishop || board[j4][i4] ==  white_bishop)  || (board[j4][i4] ==  black_queen || board[j4][i4] ==  white_queen))// ce sont tout les pion qui peuvent cause un echec au rois en diagonal
@@ -1103,14 +1161,23 @@ int check_diagonal_verification(int start_x, int start_y, int end_x, int end_y)
 int check_rook_verification(int start_x, int start_y, int end_x, int end_y)
 {
     // |---------------------------------|
-    // |                1                |
-    // |----------------♜---------------|
+    // |                ♜               |
+    // |----------------♚---------------|
     // |      |         |        |       |
     // |----------------|----------------|
+    int i;
+    int j;
 
-    int i = end_x;
-    int j = end_y - 1;
-
+    if(flag == 0)
+    {
+      i = end_x;
+      j = end_y - 1;
+    }
+    else 
+    {
+     i = end_x;
+     j = end_y - 2;
+    }
     while (j >= 0) {
 
         if((board[j][i] ==  black_rook || board[j][i] ==  white_rook) || (board[j][i] ==  black_queen || board[j][i] ==  white_queen))// ce sont tout les pion qui peuvent cause un echec au rois en horizontals
@@ -1130,12 +1197,23 @@ int check_rook_verification(int start_x, int start_y, int end_x, int end_y)
 
     // |----------------|----------------|
     // |       |        |                |
-    // |----------------♜       2        |
+    // |----------------♚-------♜      |
     // |       |        |                |
     // |----------------|----------------|
 
-    int i2 = end_x + 1;
-    int j2 = end_y;
+    int i2;
+    int j2;
+
+    if(flag == 0)
+    {
+      i2 = end_x + 1;
+      j2 = end_y;
+    }
+    else 
+    {
+     i2 = end_x + 2;
+     j2 = end_y;
+    }
 
     while (i2 <= 7) {
 
@@ -1155,11 +1233,22 @@ int check_rook_verification(int start_x, int start_y, int end_x, int end_y)
     }
     // |----------------|----------------|
     // |                |                |
-    // |----------------♜----------------|
-    // |                3                |
+    // |----------------♚----------------|
+    // |                ♜                |
     // |---------------------------------|
-    int i3 = end_x;
-    int j3 = end_y + 1;
+    int i3;
+    int j3;
+
+    if(flag == 0)
+    {
+      i3 = end_x;
+      j3 = end_y + 1;
+    }
+    else 
+    {
+     i3 = end_x;
+     j3 = end_y + 2;
+    }
 
     while (j3 <= 7) {
 
@@ -1178,11 +1267,22 @@ int check_rook_verification(int start_x, int start_y, int end_x, int end_y)
     }
     // |----------------|----------------|
     // |                |                |
-    // |        4       ♜----------------|
+    // |        ♜      ♚----------------|
     // |                |                |
     // |---------------------------------|
     int i4 = end_x - 1;
     int j4 = end_y;
+
+    if(flag == 0)
+    {
+      i4;
+      j4;
+    }
+    else 
+    {
+     i4 = end_x - 2;
+     j4 = end_y;
+    }
 
     while (i4 >= 0) {
 
@@ -1296,8 +1396,6 @@ int check_knight_verification(int start_x, int start_y, int end_x, int end_y)
 }
 int check_pawn_verification(int start_x, int start_y, int end_x, int end_y)
 {
-    // les echec potentiel que les pion peut faire sur le rayon de mouvement du rois a partir de sa end position
-
         // les diagnal du cote haut du plateau peuvent etre une potentiel menace pour le rois que dans le cas ou se sont des pions de couleur blanche parseque......DOIT CONTINUER
         if(board[end_y + 1][end_x + 1] == white_pawn)
         {
@@ -1313,7 +1411,9 @@ int check_pawn_verification(int start_x, int start_y, int end_x, int end_y)
             else 
                return 1;
         }
-        else if(board[end_y - 1][end_x -  1] == black_pawn)
+
+
+        if(board[end_y - 1][end_x -  1] == black_pawn)
         {
             if(check_echec_verification(start_x, start_y, end_x, end_y, end_y - 1,end_x - 1) == -1)
                return -1;
@@ -1327,41 +1427,134 @@ int check_pawn_verification(int start_x, int start_y, int end_x, int end_y)
             else 
                return 1;
         }
-        else 
-          return 1;
+
 }
-
-
-int king_verification(int start_x, int start_y, int end_x, int end_y)
+int verfication_if_it_is_correct_castling(int start_x, int start_y, int end_x, struct positon_of_kings *p)
 {
-    // verifier si les position donne ne sont pas hors limite du plateau
-    if (end_x >= 0 && end_x < 8 && end_y >= 0 && end_y < 8) {
-        // verfier si le moove du rois est un moove que dans le carre qui entoure le rois d'une case apres. 
-        if ((abs(end_x - start_x) <= 1) && (abs(end_y - start_y) <= 1)) {
-            // verifie si la piece ne sont pas de la meme couleur 
-            if (abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2) {
-                // verfier si il y'a aucun n'echec prevu sur le rois si il se dirige vers la case en question
-                if (check_diagonal_verification(start_x, start_y, end_x, end_y) == -1 || 
-                    check_rook_verification(start_x, start_y, end_x, end_y) == -1 || 
-                    check_knight_verification(start_x, start_y, end_x, end_y) == -1  ||  
-                    check_pawn_verification(start_x, start_y, end_x, end_y) == -1) {
-                    return -1; // si une des fonction return -1 sa veut dire qu'il y'aura echec sur l'une des trajectoir a partir de la case ou le roi veux se deplacer
-                } else if (check_diagonal_verification(start_x, start_y, end_x, end_y) == 0 || 
-                           check_rook_verification(start_x, start_y, end_x, end_y) == 0) {
-                    return 0; // coup legal
-                } else {
-                    return 1; // Move is legal and results in check
+    if(board[start_y][start_x] == white_king)
+    {
+        if(first_move_white_castle == 0 && first_move_white_king == 0) // first rule - it has to be the first move for both
+        {
+            if(flag_echec_on_black_king == 0 && end_x > start_x && board[7][7] == white_rook) // the second rule - the king needs to not be in check / je verifie ensuite si le rook du cote kingside est a sa place pour proceder au potentiel castle 
+            {
+                int i = start_x + 1;
+                while(i <= 6) // king side (à droite du roi)
+                {
+                    if(check_diagonal_verification(p->x_position_white_king, p->y_position_white_king, i, 7) == -1 || 
+                       check_rook_verification(p->x_position_white_king, p->y_position_white_king, i, 7) == -1 || 
+                       check_knight_verification(p->x_position_white_king, p->y_position_white_king, i, 7) == -1 || 
+                       check_pawn_verification(p->x_position_white_king, p->y_position_white_king, i, 7) == -1) 
+                    {
+                        return -1;
+                    }
+                    if(board[start_y][i] != L' ')
+                        return -1;
+                    i++;
                 }
-            } else {
-                return 0; // Pieces are of the same color, illegal move
+                return 1; // good castle
             }
-        } else {
-            return -1; // Move is not within one square in any direction
+            else if(flag_echec_on_black_king == 0 && end_x < start_x && board[7][0] == white_rook)// the second rule - the king needs to not be in check / je verifie ensuite si le rook du cote queen side est a sa place pour proceder au potentiel castle
+            {
+                int j = start_x - 1;
+                while(j >= 1) // Queen side (à gauche du roi)
+                {
+                    if(check_diagonal_verification(p->x_position_white_king, p->y_position_white_king, j, 7) == -1 || 
+                       check_rook_verification(p->x_position_white_king, p->y_position_white_king, j, 7) == -1 || 
+                       check_knight_verification(p->x_position_white_king, p->y_position_white_king, j, 7) == -1 || 
+                       check_pawn_verification(p->x_position_white_king, p->y_position_white_king, j, 7) == -1) 
+                    {
+                        return -1;
+                    }
+                    if(board[start_y][j] != L' ')
+                        return -1;
+                    j--;
+                }
+                return 1; // good castle
+            }
+            else 
+                return -1;
         }
-    } else {
-        return -1; // End position is outside the board limits
+        else 
+            return -1;
+    }
+    else if(board[start_y][start_x] == black_king)
+    {
+        if(first_move_white_castle == 0 && first_move_white_king == 0) // first rule - it has to be the first move for both.
+        {
+            if(flag_echec_on_black_king == 0 && end_x > start_x && board[0][7] == black_rook) // the second rule - the king needs to not be in check / je verifie ensuite si le rook du cote kingside est a sa place pour proceder au potentiel castle 
+            {
+                int i2 = start_x + 1;
+                while(i2 <= 6) // king side (à droite du roi)
+                {
+                    if(check_diagonal_verification(p->x_position_black_king, p->y_position_black_king, i2, 0) == -1 || 
+                       check_rook_verification(p->x_position_black_king, p->y_position_black_king, i2, 0) == -1 || 
+                       check_knight_verification(p->x_position_black_king, p->y_position_black_king, i2, 0) == -1 || 
+                       check_pawn_verification(p->x_position_black_king, p->y_position_black_king, i2, 0) == -1) 
+                    {
+                        return -1;
+                    }
+                    if(board[start_y][i2] != L' ')
+                        return -1;
+                    i2++;
+                }
+                return 1; // good castle
+            }
+            else if(flag_echec_on_black_king == 0 && end_x < start_x && board[0][0] == black_rook )// the second rule - the king needs to not be in check / je verifie ensuite si le rook du cote queen side est a sa place pour proceder au potentiel castle
+            {
+                int j2 = start_x - 1;
+                while(j2 >= 1) // Queen side (à gauche du roi)
+                {
+                    if(check_diagonal_verification(p->x_position_black_king, p->y_position_black_king, j2, 0) == -1 || 
+                       check_rook_verification(p->x_position_black_king, p->y_position_black_king, j2, 0) == -1 || 
+                       check_knight_verification(p->x_position_black_king, p->y_position_black_king, j2, 0) == -1 || 
+                       check_pawn_verification(p->x_position_black_king, p->y_position_black_king, j2, 0) == -1) 
+                    {
+                        return -1;
+                    }
+                    if(board[start_y][j2] != L' ')
+                        return -1;
+                    j2--;
+                }
+                return 1; // good castle
+            }
+            else 
+                return -1;
+        }
+        else 
+            return -1;
     }
 }
+
+
+int king_verification(int start_x, int start_y, int end_x, int end_y) {
+    // vérifier si les positions données ne sont pas hors limite du plateau
+    if (end_x >= 0 && end_x < 8 && end_y >= 0 && end_y < 8) {
+        // vérifier si le mouvement du roi est dans une case adjacente
+        if ((abs(end_x - start_x) <= 1) && (abs(end_y - start_y) <= 1)) {
+            // vérifier si la pièce n'est pas de la même couleur
+            if (abs(check_if_it_black_or_white(board[start_y][start_x]) + check_if_it_black_or_white(board[end_y][end_x])) != 2) {
+                // vérifier s'il n'y a pas d'échec sur la trajectoire
+                if (check_diagonal_verification(start_x, start_y, end_x, end_y) == -1 || 
+                    check_rook_verification(start_x, start_y, end_x, end_y) == -1 || 
+                    check_knight_verification(start_x, start_y, end_x, end_y) == -1 ||  
+                    check_pawn_verification(start_x, start_y, end_x, end_y) == -1) {
+                    return -1; // échec sur la trajectoire
+                } else {
+                    return 1; // mouvement légal
+                }
+            } else {
+                return 0; // pièces de la même couleur, mouvement illégal
+            }
+        } else if ((abs(end_x - start_x) == 2) && end_y == start_y  && (end_y == 7 || end_y == 0)) {
+            return 3; // tentative de roque
+        } else {
+            return -1; // mouvement non valide pour le roi
+        }
+    } else {
+        return -1; // position finale hors limite
+    }
+}
+
 
 int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y, wchar_t piece) {
     //cette fonction va faire prendre en consideration que  un deplacemnt de chaque piece coller au rois vers une autre case qui peuvent provoque un potentiel echec sur le rois  par des fou, reine, tour, comme coup illegal.
@@ -1378,7 +1571,7 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
             return 1;
         }
     } else if (piece == black_queen || piece == white_queen) {
-        //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que une piece provoque un echec a son rois du a sont deplacement
+        //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que dans le cas une piece provoque un echec a son rois du a sont deplacement
         if(check_if_it_black_or_white(board[end_y][end_x]) != check_if_it_black_or_white(piece))
         {
             return 1;
@@ -1389,7 +1582,18 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
             return 1;
         }
     } else if (piece == black_bishop || piece == white_bishop) {
-         //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que une piece provoque un echec a son rois du a sont deplacement
+         //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que dans le cas une piece provoque un echec a son rois du a sont deplacement
+        if(check_if_it_black_or_white(board[end_y][end_x]) != check_if_it_black_or_white(piece))
+        {
+            return 1;
+        }
+        else if ((check_diagonal_verification(start_x, start_y, end_x, end_y) == -1 || check_rook_verification(start_x, start_y, end_x, end_y) == -1)) { //je verifie les trajectoire diagonal, vertical et horizontal que dans le cas ou la piece bouger va provoquer un  echec sur le rois de sa couleur ce qui est un coup illegal
+            return -1;
+        } else {
+            return 1;
+        }
+    } else if (piece == black_rook || piece == white_rook) {
+         //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que dans le cas  une piece provoque un echec a son rois du a sont deplacement
         if(check_if_it_black_or_white(board[end_y][end_x]) != check_if_it_black_or_white(piece))
         {
             return 1;
@@ -1401,7 +1605,7 @@ int verification_it_will_be_check(int start_x, int start_y, int end_x, int end_y
         }
     } 
     else if (piece == black_pawn|| piece == white_pawn) {
-        //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que une piece provoque un echec a son rois du a sont deplacement
+        //si la piece n'est pas de la meme couleur du rois sur la traj en question il pourra mettre en echec le rois adverse c'est que dans le cas  une piece provoque un echec a son rois du a sont deplacement
         if(check_if_it_black_or_white(board[end_y][end_x]) != check_if_it_black_or_white(piece))
         {
             return 1;
@@ -1454,11 +1658,12 @@ char proposer_promotion_black() {
     }
 }
 
-void update_board(struct start_position s, struct end_position e, struct positon_of_kings p) {
+void update_board(struct start_position s, struct end_position e, struct positon_of_kings *p) {
     int start_x = s.absice_position;
     int start_y = s.ordonne_position;
     int end_x = e.absice_position;
     int end_y = e.ordonne_position;
+    char choice;
 
     wchar_t piece = find_piece(s);
     printf("Piece at start position: %lc\n", piece);
@@ -1471,7 +1676,8 @@ void update_board(struct start_position s, struct end_position e, struct positon
                    // Deplacement provisoire  de la piece en attente de verfication
                     board[end_y][end_x] = board[start_y][start_x];
                     board[start_y][start_x] = L' ';
-                    if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+
+                    if(verification_it_will_be_check(p->x_position_white_king,p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king,  p->y_position_black_king,  p->x_position_black_king,  p->y_position_black_king, piece) != 1)
                     {
                         //retour a l'etat initial puisque le coup en question est illegal
                         board[start_y][start_x] = board[end_y][end_x];
@@ -1506,7 +1712,8 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king,p->y_position_black_king,p->x_position_black_king,  p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1537,7 +1744,8 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king,p->y_position_black_king, p->x_position_black_king, p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1569,7 +1777,8 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1590,7 +1799,8 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1606,6 +1816,7 @@ void update_board(struct start_position s, struct end_position e, struct positon
                    flag_correct_moove = 1;
                    char promotion = proposer_promotion_white();
                    board[end_y][end_x] = promotion;
+                   
                  }
                  else
                  {
@@ -1623,7 +1834,7 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1664,7 +1875,7 @@ void update_board(struct start_position s, struct end_position e, struct positon
             // Deplacement provisoire  de la piece en attente de verfication
             board[end_y][end_x] = board[start_y][start_x];
             board[start_y][start_x] = L' ';
-            if(verification_it_will_be_check(p.x_position_white_king, p.y_position_white_king, p.x_position_white_king, p.y_position_white_king, piece) != 1 || verification_it_will_be_check(p.x_position_black_king, p.y_position_black_king, p.x_position_black_king, p.y_position_black_king, piece) != 1)
+            if(verification_it_will_be_check(p->x_position_white_king, p->y_position_white_king, p->x_position_white_king, p->y_position_white_king, piece) != 1 || verification_it_will_be_check( p->x_position_black_king, p->y_position_black_king, p->x_position_black_king, p->y_position_black_king, piece) != 1)
             {
                //retour a l'etat initial puisque le coup en question est illegal
                board[start_y][start_x] = board[end_y][end_x];
@@ -1688,47 +1899,60 @@ void update_board(struct start_position s, struct end_position e, struct positon
                 flag_correct_moove = 0;
         }
     }
-    else if (piece == black_king || piece == white_king)
-    {
-        if (king_verification(start_x, start_y, end_x, end_y) == 1) {
-                // Deplacement de la piece
+    else if (piece == black_king || piece == white_king) {
+
+        int king_result = king_verification(start_x, start_y, end_x, end_y);
+
+        if (king_result == 1) {
+
+            // Déplacement simple du roi
+            board[end_y][end_x] = board[start_y][start_x];
+            board[start_y][start_x] = L' ';
+            printf("Piece moved successfully.\n");
+            flag_correct_moove = 1;
+
+            if (piece == white_king) {
+                p->x_position_white_king = end_x;
+                p->y_position_white_king = end_y;
+            } else {
+                p->x_position_black_king = end_x;
+                p->y_position_black_king = end_y;
+            }
+        } else if (king_result == 3) {
+            // Vérification et réalisation du roque
+            if (verfication_if_it_is_correct_castling(start_x, start_y, end_x, p) == 1) {
+
+                // Mise à jour du roi (kingside)
                 board[end_y][end_x] = board[start_y][start_x];
                 board[start_y][start_x] = L' ';
-                printf("Piece moved successfully.\n");
+
+                // Mise à jour de la tour
+                if (end_x == 6) { // roque côté roi
+                    board[end_y][5] = board[end_y][7];
+                    board[end_y][7] = L' ';
+                } else if (end_x == 2) { // roque côté dame (queen side)
+                    board[end_y][3] = board[end_y][0];
+                    board[end_y][0] = L' ';
+                }
+                printf("Castling move executed successfully.\n");
                 flag_correct_moove = 1;
-                if(piece == white_king)
-                {
-                    p.x_position_white_king = end_x;
-                    p.y_position_white_king = end_y;
 
+                if (piece == white_king) {
+                    p->x_position_white_king = end_x;
+                    p->y_position_white_king = end_y;
+                } else {
+                    p->x_position_black_king = end_x;
+                    p->y_position_black_king = end_y;
                 }
-                else
-                {
-                    p.y_position_black_king = end_y;
-                    p.x_position_black_king = end_x;
-
-                }
-
-        } 
-        else if(king_verification(start_x, start_y, end_x, end_y) == 0)
-        {
-            printf("Invalid move for the king: You cannot eat a piece of your color\n");
+            } else {
+                printf("Invalid castling move.\n");
+                flag_correct_moove = 0;
+            }
+        } else {
+            printf("Invalid move for the king.\n");
             flag_correct_moove = 0;
         }
-        else {
-                printf("Invalid move for the king it's will be check\n");
-                flag_correct_moove = 0;
-        }
     }
-    else {
-        printf("No Piece found at the specified position.\n");
-        flag_correct_moove = 0;
-    }
-    
-
-    
-
-
 }
 
 int check_if_it_black_or_white(wchar_t piece)
