@@ -43,7 +43,7 @@ struct positon_of_kings {
 };
 
 wchar_t board[8][8] = {
-    { black_rook, black_knight, black_bishop, black_queen, black_king, L' ', L' ', black_rook },
+    { black_rook, black_knight, black_bishop, black_queen, black_king, black_bishop,  black_knight, black_rook },
     { black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn },
     { L' ', L' ', L' ', L' ', L' ', L' ',  L' ',  L' '},
     { L' ', L' ', L' ', L' ', L' ', L' ', L' ',  L' ' },
